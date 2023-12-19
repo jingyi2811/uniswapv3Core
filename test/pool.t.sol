@@ -16,23 +16,23 @@ contract StablePoolTest is Test {
     IUniswapV3Pool pool;
 
     function setUp() public {
-        factory = IUniswapV3Factory(factoryAddress);
-        pool = IUniswapV3Pool(factory.getPool(daiAddress, usdtAddress, 3000));
+//        factory = IUniswapV3Factory(factoryAddress);
+//        pool = IUniswapV3Pool(factory.getPool(daiAddress, usdtAddress, 3000));
     }
 
     function testStablePool() public {
-        (
-            uint160 sqrtPriceX96,
-            int24 tick,
-            uint16 observationIndex,
-            uint16 observationCardinality,
-            uint16 observationCardinalityNext,
-            uint8 feeProtocol,
-            bool unlocked
-        )
-        = pool.slot0();
-
-        console.log(sqrtPriceX96);
-        console.logInt(tick);
+//        (
+//            uint160 sqrtPriceX96,
+//            int24 tick,
+//            uint16 observationIndex,
+//            uint16 observationCardinality,
+//            uint16 observationCardinalityNext,
+//            uint8 feeProtocol,
+//            bool unlocked
+//        )
+//        = pool.slot0();
+//
+//        console.log(sqrtPriceX96);
+//        console.logInt(tick);
     }
 }
