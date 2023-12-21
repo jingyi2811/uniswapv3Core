@@ -5,8 +5,12 @@ import "v3-core/contracts/libraries/FullMath.sol";
 import {ERC20} from "solmate/tokens/ERC20.sol";
 import {UniswapV3OracleHelper as OracleHelper} from "./Oracle.sol";
 import "./Deviation.sol";
+import "v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import "./IUniswapV3Factory.sol";
+import '../src/IERC20.sol';
+import "forge-std/console.sol";
 
-contract Pool{
+contract MyPool {
     using FullMath for uint256;
 
     struct UniswapV3Params {
@@ -38,6 +42,22 @@ contract Pool{
         uint256 baseInQuoteTWAP_,
         uint256 baseInQuotePrice_
     );
+
+    address public firstAddress = 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599;
+    address public secondAddress = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
+    address public factoryAddress = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
+
+    IUniswapV3Factory factory;
+    IUniswapV3Pool public pool;
+
+    constructor() public {
+        factory = IUniswapV3Factory(factoryAddress);
+        pool = IUniswapV3Pool(factory.getPool(firstAddress, secondAddress, 3000));
+
+        console.log(IERC20(firstAddress).symbol());
+        console.log(IERC20(secondAddress).symbol());
+
+    }
 
     function getTokenTWAP(
         address lookupToken_,

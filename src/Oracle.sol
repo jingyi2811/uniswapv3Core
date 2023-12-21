@@ -7,6 +7,7 @@ pragma solidity 0.8.15;
 import {IUniswapV3Pool} from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import {TickMath} from "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 import {OracleLibrary} from "@uniswap/v3-periphery/contracts/libraries/OracleLibrary.sol";
+import "forge-std/console.sol";
 
 // Standard libraries
 import {ERC20} from "solmate/tokens/ERC20.sol";
@@ -88,6 +89,12 @@ library UniswapV3OracleHelper {
             uint160[] memory
         ) {
             timeWeightedTick = (tickCumulatives[1] - tickCumulatives[0]) / int32(period_);
+
+            console.log(7777);
+            console.log(tickCumulatives.length);
+            console.logInt(int(tickCumulatives[0]));
+            console.logInt(int(tickCumulatives[1]));
+
         } catch (bytes memory) {
             // This function will revert if the observation window is longer than the oldest observation in the pool
             // https://github.com/Uniswap/v3-core/blob/d8b1c635c275d2a9450bd6a78f3fa2484fef73eb/contracts/libraries/Oracle.sol#L226C30-L226C30

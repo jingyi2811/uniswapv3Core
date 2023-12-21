@@ -1,26 +1,36 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import '../src/IUniswapV3Factory.sol';
-import "../src/IUniswapV3Pool.sol";
-
 import "forge-std/Test.sol";
 import "forge-std/console.sol";
+import "../src/MyPool.sol";
 
-contract StablePoolTest is Test {
-    address daiAddress = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-    address usdtAddress = 0xdAC17F958D2ee523a2206206994597C13D831ec7;
-    address factoryAddress = 0x1F98431c8aD98523631AE4a59f267346ea31F984;
+contract PriceTest is Test {
 
-    IUniswapV3Factory factory;
-    IUniswapV3Pool pool;
+    function testPrice() public {
+        MyPool myPool = new MyPool();
+        bytes memory encoded = abi.encode(myPool.pool(), 60, 0);
 
-    function setUp() public {
-//        factory = IUniswapV3Factory(factoryAddress);
-//        pool = IUniswapV3Pool(factory.getPool(daiAddress, usdtAddress, 3000));
-    }
+        {
+            uint price = myPool.getTokenPrice(myPool.firstAddress(), 18, encoded);
+            console.log(price);
+        }
 
-    function testStablePool() public {
+        {
+            uint price = myPool.getTokenPrice(myPool.secondAddress(), 18, encoded);
+            console.log(price);
+        }
+
+        {
+            uint price = myPool.getTokenTWAP(myPool.firstAddress(), 18, encoded);
+            console.log(price);
+        }
+
+        {
+            uint price = myPool.getTokenTWAP(myPool.secondAddress(), 18, encoded);
+            console.log(price);
+        }
+
 //        (
 //            uint160 sqrtPriceX96,
 //            int24 tick,
