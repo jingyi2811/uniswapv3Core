@@ -54,6 +54,8 @@ contract MyPool {
         factory = IUniswapV3Factory(factoryAddress);
         pool = IUniswapV3Pool(factory.getPool(firstAddress, secondAddress, 3000));
 
+        console.log(address(pool));
+
         console.log(IERC20(firstAddress).symbol());
         console.log(IERC20(secondAddress).symbol());
 

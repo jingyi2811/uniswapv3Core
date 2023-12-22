@@ -82,18 +82,13 @@ library UniswapV3OracleHelper {
         uint32[] memory observationWindow = new uint32[](2);
         observationWindow[0] = period_;
         observationWindow[1] = 0;
-
         int56 timeWeightedTick;
         try pool.observe(observationWindow) returns (
             int56[] memory tickCumulatives,
             uint160[] memory
         ) {
-            timeWeightedTick = (tickCumulatives[1] - tickCumulatives[0]) / int32(period_);
 
-            console.log(7777);
-            console.log(tickCumulatives.length);
-            console.logInt(int(tickCumulatives[0]));
-            console.logInt(int(tickCumulatives[1]));
+            timeWeightedTick = (tickCumulatives[1] - tickCumulatives[0]) / int32(period_);
 
         } catch (bytes memory) {
             // This function will revert if the observation window is longer than the oldest observation in the pool
