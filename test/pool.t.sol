@@ -12,8 +12,7 @@ contract PriceTest is Test {
         bytes memory encoded = abi.encode(myPool.pool(), 6000 * 10, 100);
 
         {
-            uint price = myPool.getTokenPrice(myPool.firstAddress(), 18, encoded);
-            console.log(price);
+            myPool.getTimeWeightedTick(address(myPool.pool()), 1);
         }
 //
 //        {

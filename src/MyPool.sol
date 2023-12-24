@@ -52,8 +52,8 @@ contract MyPool {
 
     constructor() public {
         factory = IUniswapV3Factory(factoryAddress);
-        pool = IUniswapV3Pool(factory.getPool(firstAddress, secondAddress, 3000));
-
+        //pool = IUniswapV3Pool(factory.getPool(firstAddress, secondAddress, 3000));
+        pool = IUniswapV3Pool(0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8);
         console.log(address(pool));
 
         console.log(IERC20(firstAddress).symbol());
@@ -205,5 +205,63 @@ contract MyPool {
             );
 
         return (quoteToken, quoteTokenDecimals, lookupTokenDecimals);
+    }
+
+    uint32 internal constant TWAP_MIN_OBSERVATION_WINDOW = 19; // seconds
+
+    error UniswapV3OracleHelper_ObservationTooShort(
+        address pool_,
+        uint32 observationWindow_,
+        uint32 minObservationWindow_
+    );
+
+    error UniswapV3OracleHelper_InvalidObservation(address pool_, uint32 observationWindow_);
+
+    error UniswapV3OracleHelper_TickOutOfBounds(
+        address pool_,
+        int56 timeWeightedTick_,
+        int24 minTick_,
+        int24 maxTick_
+    );
+
+    function getTimeWeightedTick(address pool_, uint32 period_) public view returns (int56) {
+        //IUniswapV3Pool pool = IUniswapV3Pool(pool_);
+
+        // Ensure the observation window is long enough
+//        if (period_ < TWAP_MIN_OBSERVATION_WINDOW)
+//            revert UniswapV3OracleHelper_ObservationTooShort(
+//                pool_,
+//                period_,
+//                TWAP_MIN_OBSERVATION_WINDOW
+//            );
+
+        // Get tick and liquidity from the TWAP
+        uint32[] memory observationWindow = new uint32[](2);
+        observationWindow[0] = period_;
+        observationWindow[1] = 0;
+
+        int56 timeWeightedTick;
+        try pool.observe(observationWindow) returns (
+            int56[] memory tickCumulatives,
+            uint160[] memory
+        ) {
+            timeWeightedTick = (tickCumulatives[1] - tickCumulatives[0]) / int32(period_);
+        } catch (bytes memory) {
+            // This function will revert if the observation window is longer than the oldest observation in the pool
+            // https://github.com/Uniswap/v3-core/blob/d8b1c635c275d2a9450bd6a78f3fa2484fef73eb/contracts/libraries/Oracle.sol#L226C30-L226C30
+            revert UniswapV3OracleHelper_InvalidObservation(pool_, period_);
+        }
+
+        // Ensure the time-weighted tick is within the bounds of permissible ticks
+        // Otherwise getQuoteAtTick will revert: https://docs.uniswap.org/contracts/v3/reference/error-codes
+        if (timeWeightedTick > TickMath.MAX_TICK || timeWeightedTick < TickMath.MIN_TICK)
+            revert UniswapV3OracleHelper_TickOutOfBounds(
+                pool_,
+                timeWeightedTick,
+                TickMath.MIN_TICK,
+                TickMath.MAX_TICK
+            );
+
+        return timeWeightedTick;
     }
 }
